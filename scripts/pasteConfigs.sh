@@ -17,7 +17,7 @@ pasteLibinputGestures() {
 }
 
 pasteFish() {
-	cp -a ../configs/fish ~/.configs/fish
+	cp -a ../configs/fish ~/.config/fish
 }
 
 codeTest(){

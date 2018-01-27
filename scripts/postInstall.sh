@@ -95,7 +95,7 @@ mkdirFonts() {
 	fi
 }
 
-mkdirOhMyFish() {
+checkOhMyFish() {
 	DIRECTORY = "~/oh-my-fish"
 	if [ ! -d "$DIRECTORY" ]; then
 		return 1;
@@ -131,7 +131,8 @@ initialInstall() {
 	sudo dnf install -y corebird httpd mariadb-server
 	sudo dnf install -y php php-common php-mysqlnd 
 	sudo dnf install -y php-gd php-imap php-xml 
-	sudo dnf install -y php-cli php-opcac oxygen-icon-theme
+	sudo dnf install -y php-cli php-opcac 
+	sudo dnf install -y oxygen-icon-theme
 }
 
 enableCoprRepos() {
@@ -187,7 +188,7 @@ clonePowerlineFonts() {
 }
 
 cloneOhMyFish() {
-	if [ checkOhMyFish ]; then
+	if [ ! checkOhMyFish ]; then
 		cd ~
 		git clone https://github.com/oh-my-fish/oh-my-fish
 		cd ~/oh-my-fish
