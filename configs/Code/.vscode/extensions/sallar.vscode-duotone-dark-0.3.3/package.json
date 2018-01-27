@@ -1,0 +1,62 @@
+{
+	"name": "vscode-duotone-dark",
+	"displayName": "DuoTone Dark Themes",
+	"description": "DuoTone Dark Themes for Visual Studio Code",
+	"version": "0.3.3",
+	"publisher": "sallar",
+	"engines": {
+		"vscode": "^1.5.0"
+	},
+	"scripts": {
+		"build": "node ./src/build.js"
+	},
+	"categories": [
+		"Themes"
+	],
+	"icon": "icon.svg",
+	"galleryBanner": {
+		"color": "#444C55",
+		"theme": "dark"
+	},
+	"contributes": {
+		"themes": [
+			{
+				"label": "DuoTone Dark Sea",
+				"uiTheme": "vs-dark",
+				"path": "./themes/Sea.tmTheme"
+			},
+			{
+				"label": "DuoTone Dark Space",
+				"uiTheme": "vs-dark",
+				"path": "./themes/Space.tmTheme"
+			},
+			{
+				"label": "DuoTone Dark Forest",
+				"uiTheme": "vs-dark",
+				"path": "./themes/Forest.tmTheme"
+			},
+			{
+				"label": "DuoTone Dark Sky",
+				"uiTheme": "vs-dark",
+				"path": "./themes/Sky.tmTheme"
+			},
+			{
+				"label": "DuoTone Dark Earth",
+				"uiTheme": "vs-dark",
+				"path": "./themes/Earth.tmTheme"
+			}
+		]
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/sallar/vscode-duotone-dark.git"
+	},
+	"homepage": "https://github.com/sallar/vscode-duotone-dark#readme",
+	"license": "MIT",
+	"author": "Sallar Kaboli <sallar.kaboli@gmail.com>",
+	"__metadata": {
+		"id": "344c4c0e-58d1-4c96-a8ec-7332addc037c",
+		"publisherId": "c93dc07b-d520-484b-a42d-46ebc2acc646",
+		"publisherDisplayName": "Sallar Kaboli"
+	}
+}
