@@ -93,7 +93,7 @@ checkDirCode() {
 
 # Main function
 if [ testNet ]; then
-	if [ checkDirCode && codeTest ]; then
+	if [ checkDirCode ] && [ codeTest ]; then
 		pasteCode
 	fi
 	pasteBashrc
