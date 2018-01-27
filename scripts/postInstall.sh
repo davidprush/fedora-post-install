@@ -76,9 +76,10 @@ postInstall() {
 }
 
 mkdirProjects() {
-	DIRECTORY = "~/Projects"
-	if [ ! -d "$DIRECTORY" ]; then
-  		mkdir ~/Projects
+	PROJDIR = "~/Projects"
+	if [ ! -d "$PROJDIR" ]; then
+		cd ~
+  		mkdir Projects
 		return 0;
 	else
 		return 0;
@@ -86,18 +87,19 @@ mkdirProjects() {
 }
 
 mkdirFonts() {
-	DIRECTORY = "~/Fonts"
-	if [ ! -d "$DIRECTORY" ]; then
-  		mkdir ~/Fonts
+	FONTDIR = "~/Fonts"
+	if [ ! -d "$FONTDIR" ]; then
+		cd ~
+  		mkdir Fonts
 		return 0;
 	else
-		return 0;
+		return 1;
 	fi
 }
 
 checkOhMyFish() {
-	DIRECTORY = "~/oh-my-fish"
-	if [ ! -d "$DIRECTORY" ]; then
+	OMFDIR = "~/oh-my-fish"
+	if [ ! -d "$OMFDIR" ]; then
 		return 1;
 	else
 		return 0;
@@ -131,13 +133,13 @@ initialInstall() {
 	sudo dnf install -y corebird httpd mariadb-server
 	sudo dnf install -y php php-common php-mysqlnd 
 	sudo dnf install -y php-gd php-imap php-xml 
-	sudo dnf install -y php-cli php-opcac 
+	sudo dnf install -y php-cli php-opcache 
 	sudo dnf install -y oxygen-icon-theme
 }
 
 enableCoprRepos() {
-	sudo dnf copr enable mhoeher/multitouch
-	sudo dnf copr enable heliocastro/hack-fonts
+	sudo dnf copr enable -y mhoeher/multitouch
+	sudo dnf copr enable -y heliocastro/hack-fonts
 }
 
 installVSCode() {
@@ -212,13 +214,20 @@ cloneBobTheFish() {
 
 # Main function
 if [ testNet ]; then
+	SCRIPTROOT=$(pwd)
 	updateSystem
 	enableCoprRepos
+	cd $SCRIPTROOT
 	initialInstall
+	cd $SCRIPTROOT
 	installVSCode
+	cd $SCRIPTROOT
 	installChrome
+	cd $SCRIPTROOT
 	cloneNerdFonts
+	cd $SCRIPTROOT
 	clonePowerlineFonts
+	cd $SCRIPTROOT
 	cloneOhMyFish
 	cloneBobTheFish
 	./pasteConfigs.sh
