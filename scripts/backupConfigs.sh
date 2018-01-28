@@ -16,7 +16,7 @@ backupLibinputGestures() {
 }
 
 backupFish() {
-	cp -a ~/.configs/fish ../configs/fish
+	cp -a ~/.config/fish ../configs/fish
 }
 
 codeTest(){
