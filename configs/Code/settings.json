@@ -1,4 +1,17 @@
 {
+    "window.zoomLevel": 1,
+    "sync.gist": "3ec0b1243ceff777be55eb3867ca4611",
+    "sync.lastUpload": "",
+    "sync.autoDownload": false,
+    "sync.autoUpload": false,
+    "sync.lastDownload": "2017-10-26T18:08:38.141Z",
+    "sync.forceDownload": false,
+    "sync.anonymousGist": false,
+    "sync.host": "",
+    "sync.pathPrefix": "",
+    "sync.quietSync": false,
+    "sync.askGistName": false,
+    "editor.fontSize": 12,
     "terminal.integrated.shell.linux": "/bin/fish",
     "workbench.iconTheme": "material-icon-theme",
     "gitlens.advanced.messages": {
