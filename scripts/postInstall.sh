@@ -113,28 +113,35 @@ updateSystem() {
 
 initialInstall() {
 	# Install initial apps
-	sudo dnf install -y nano inxi powerline tlp htop
-	sudo dnf install -y gcc make nodejs npm fish
-	sudo dnf install -y youtube-dl gnome-tweak-tool
-	sudo dnf install -y gcc vlc patch autoconf gcc-c++ 
-	sudo dnf install -y patch libffi-devel automake 
-	sudo dnf install -y libtool bison sqlite-devel 
-	sudo dnf install -y ImageMagick-devel git gitg 
-	sudo dnf install -y python2 python2-pip python3
-	sudo dnf install -y python3-pip java-9-openjdk
-	sudo dnf install -y icedtea-web go rust docker 
-	sudo dnf install -y docker-compose terminator
-	sudo dnf install -y dnf-plugins-core
-	sudo dnf install -y automake gcc kernel-devel
-	sudo dnf install -y openssl-devel ncurses-devel 
-	sudo dnf install -y wxBase3 wxGTK3-devel m4
-	sudo dnf install -y libinput-gestures hack-fonts
-	sudo dnf install -y vim-enhanced vim-X11 gimp
-	sudo dnf install -y corebird httpd mariadb-server
-	sudo dnf install -y php php-common php-mysqlnd 
-	sudo dnf install -y php-gd php-imap php-xml 
-	sudo dnf install -y php-cli php-opcache 
-	sudo dnf install -y oxygen-icon-theme
+	sudo dnf install -y nano inxi powerline tlp htop \
+						gcc make nodejs npm fish \
+						youtube-dl gnome-tweak-tool \
+						gcc vlc patch autoconf gcc-c++ \
+						patch libffi-devel automake \
+						libtool bison sqlite-devel \
+						ImageMagick-devel git gitg \
+						python2 python2-pip python3 \
+						python3-pip java-9-openjdk \
+						icedtea-web go rust docker \
+						docker-compose terminator \
+						dnf-plugins-core automake gcc \
+						openssl-devel ncurses-devel \
+						wxBase3 wxGTK3-devel m4 \
+						libinput-gestures hack-fonts \
+						vim-enhanced vim-X11 gimp \
+						corebird httpd mariadb-server \
+						php php-common php-mysqlnd \
+						php-gd php-imap php-xml \
+						php-cli php-opcache \
+						oxygen-icon-theme kernel-devel
+}
+
+getBashDB() {
+	wget https://sourceforge.net/projects/bashdb/files/bashdb/4.4-0.93/bashdb-4.4-0.93.tar.bz2/download
+	cd bashdb*
+	./configure
+	make && make check
+	su -c 'make install'
 }
 
 enableCoprRepos() {
@@ -217,17 +224,17 @@ if [ testNet ]; then
 	SCRIPTROOT=$(pwd)
 	updateSystem
 	enableCoprRepos
-	cd $SCRIPTROOT
+	cd $(SCRIPTROOT)
 	initialInstall
-	cd $SCRIPTROOT
+	cd $(SCRIPTROOT)
 	installVSCode
-	cd $SCRIPTROOT
+	cd $(SCRIPTROOT)
 	installChrome
-	cd $SCRIPTROOT
+	cd $(SCRIPTROOT)
 	cloneNerdFonts
-	cd $SCRIPTROOT
+	cd $(SCRIPTROOT)
 	clonePowerlineFonts
-	cd $SCRIPTROOT
+	cd $(SCRIPTROOT)
 	cloneOhMyFish
 	cloneBobTheFish
 	./pasteConfigs.sh
