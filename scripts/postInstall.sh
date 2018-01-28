@@ -10,7 +10,7 @@
 #           6) Clean up somethings
 #           7) Finish
 
-testRoot() {
+uidTest() {
 	# Test if currently running as root
 	if [ $EUID -ne 0 ]; then
 		return 0
@@ -24,7 +24,7 @@ wgetTest(){
     if [ ! which wget > /dev/null ]; then
         echo -e "wget not found! Install? (y/n) \c"
         read
-		if "$REPLY" = "y"; then
+		if "$ANSYN" = "y"; then
 			sudo dnf install wget
 			return 0
 		else
@@ -38,20 +38,24 @@ wgetTest(){
 fishTest(){
     # Check for fish install
     if [ ! which fish > /dev/null ]; then
-        echo -e "fish not found! Install? (y/n) \c"
-        read
-		if "$REPLY" = "y"; then
-			sudo dnf install fish
-			return 0
-		else
-			return 1
-		fi
+		while true; do
+			read -p "Install fish? (y/n)" ANSYN
+			case $ANSYN in
+				[Yy]* ) sudo dnf install fish
+						return 0
+						break;;
+				[Nn]* ) return 1
+						exit;;
+				* ) echo "Please answer yes or no.";;
+			esac
+		done
 	else
+		echo "fish installed, current version: " $(fish -v)
 		return 0    
     fi
 }
 
-testNet() {
+netTest() {
 	# Test for internet connectivity by silently requesting page
 	if [ wgetTest ]; then
 		wget -q --spider http://www.google.com 
@@ -71,34 +75,23 @@ postInstall() {
 	sudo dnf clean all
 	echo " "
 	sudo dnf history userinstalled
-	echo "Script Completed!"
+	echo "postInstall done!"
 	exit 1
 }
 
-mkdirProjects() {
-	PROJDIR = "~/Projects"
+doProjects() {
+	PROJDIR = "$HOME/Projects"
 	if [ ! -d "$PROJDIR" ]; then
-		cd ~
-  		mkdir Projects
+		cd $HOME
+  		mkdir $PROJDIR
 		return 0;
 	else
 		return 0;
 	fi
 }
 
-mkdirFonts() {
-	FONTDIR = "~/Fonts"
-	if [ ! -d "$FONTDIR" ]; then
-		cd ~
-  		mkdir Fonts
-		return 0;
-	else
-		return 1;
-	fi
-}
-
-checkOhMyFish() {
-	OMFDIR = "~/oh-my-fish"
+checkOMF() {
+	OMFDIR = "$HOME/oh-my-fish"
 	if [ ! -d "$OMFDIR" ]; then
 		return 1;
 	else
@@ -136,6 +129,7 @@ initialInstall() {
 						oxygen-icon-theme kernel-devel
 }
 
+# Maybe someday...still unsure about this bashdb thing
 getBashDB() {
 	wget https://sourceforge.net/projects/bashdb/files/bashdb/4.4-0.93/bashdb-4.4-0.93.tar.bz2/download
 	cd bashdb*
@@ -144,21 +138,25 @@ getBashDB() {
 	su -c 'make install'
 }
 
-enableCoprRepos() {
+setCopr() {
 	sudo dnf copr enable -y mhoeher/multitouch
 	sudo dnf copr enable -y heliocastro/hack-fonts
 }
 
-installVSCode() {
-	sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-	sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
-	sudo dnf check-update
-	sudo dnf install code
+instCode() {
+  if [ ! which code > /dev/null ]; then
+		sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+		sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+		sudo dnf check-update
+		sudo dnf install code
+	else
+		echo "VS Installed with current version:" $(code --version)
+	fi
 }
 
-installChrome() {
-	cd ~/Downloads
-	if [ wgetTest ]; then
+instChrome() {
+  if [ ! which google-chrome  > /dev/null ] && [ wgetTest ] && [ wgetTest ]; then
+		cd $HOME/Downloads
 		wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
 		sudo rpm -i google-chrome-stable_current_x86_64.rpm
 		sudo dnf update -y
@@ -168,75 +166,111 @@ installChrome() {
 	fi	
 }
 
-cloneNerdFonts() {
-	if [ mkdirFonts ]; then
-		cd ~/Fonts
-		git clone https://github.com/ryanoasis/nerd-fonts.git
-		cd ~/Fonts/nerd-fonts
-		chmod a+x install.sh
-		./install.sh
-		sudo fc-cache -vf
-		return 0		
+getNerdFonts() {
+	mkdir $HOME/Fonts
+	cd $HOME/Fonts
+	echo "nerd-fonts directory:=" $(pwd)
+	while true; do
+		read -p "Confirm nerd-fonts directory? (y/n)" ANSYN
+		case $ANSYN in
+			[Yy]* ) git clone https://github.com/ryanoasis/nerd-fonts.git 
+					cd $HOME/Fonts/nerd-fonts
+					chmod a+x install.sh
+					./install.sh
+					sudo fc-cache -vf
+					return 0
+					break;;
+			[Nn]* ) exit;;
+			* ) echo "Please answer yes or no.";;
+		esac
+	done
+}
+
+getPowerFonts() {
+	mkdir $HOME/Fonts
+	cd $HOME/Fonts
+	echo "Powerline Fonts directory:=" $(pwd)
+	while true; do
+		read -p "Confirm Powerline Fonts directory? (y/n)" ANSYN
+		case $ANSYN in
+			[Yy]* ) git clone https://github.com/powerline/fonts.git 
+					cd $HOME/Fonts/fonts
+					chmod a+x install.sh
+					./install.sh
+					sudo fc-cache -vf
+					return 0
+					break;;
+			[Nn]* ) exit;;
+			* ) echo "Please answer yes or no.";;
+		esac
+	done		
+}
+
+cloneOMF() {
+	if [ ! checkOMF ]; then
+		cd $HOME
+		echo "oh-my-fish directory:=" $(pwd)
+		while true; do
+			read -p "Confirm oh-my-fish directory? (y/n)" ANSYN
+			case $ANSYN in
+				[Yy]* ) git clone https://github.com/oh-my-fish/oh-my-fish
+						cd $HOME/oh-my-fish
+						chmod a+x bin/install
+						bin/install --offline
+						return 0
+						break;;
+				[Nn]* ) exit;;
+				* ) echo "Please answer yes or no.";;
+			esac
+		done		
 	else
 		return 1
 	fi
 }
 
-clonePowerlineFonts() {
-	if [ mkdirFonts ]; then
-		cd ~/Fonts
-		git clone https://github.com/powerline/fonts.git
-		cd ~/Fonts/fonts
-		chmod a+x install.sh
-		./install.sh
-		sudo fc-cache -vf
-		return 0		
-	else
-		return 1
-	fi
-}
-
-cloneOhMyFish() {
-	if [ ! checkOhMyFish ]; then
-		cd ~
-		git clone https://github.com/oh-my-fish/oh-my-fish
-		cd ~/oh-my-fish
-		chmod a+x bin/install
-		bin/install --offline
-		return 0		
-	else
-		return 1
-	fi
-}
-
-cloneBobTheFish() {
+cloneBTF() {
 	if [ fishTest ]; then
-		cd ~/Projects/FedoraPostInstall
-		./installBobTheFish.fish
-		return 1
-	else
+		cd $HOME/Downloads
+		echo "bobthefish directory:=" $(pwd)
+		while true; do
+			read -p "Confirm bobthefish directory? (y/n)" ANSYN
+			case $ANSYN in
+				[Yy]* ) ./installBobTheFish.fish; break;;
+				[Nn]* ) exit;;
+				* ) echo "Please answer yes or no.";;
+			esac
+		done		
 		return 0
+	else
+		return 1
 	fi 
 }
 
-# Main function
-if [ testNet ]; then
-	SCRIPTROOT=$(pwd)
+defDir() {
+	cd $1
+	echo "pwd:="$(pwd)
+	echo "DEFDIR:="$1
+}
+
+# Main Procedure
+DEFDIR=$(pwd) 	# Get pwd to return to default directory
+echo "DEFDIR:="$DEFDIR
+if [ netTest ]; then
 	updateSystem
-	enableCoprRepos
-	cd $(SCRIPTROOT)
+	setCopr
+	defDir $DEFDIR
 	initialInstall
-	cd $(SCRIPTROOT)
-	installVSCode
-	cd $(SCRIPTROOT)
-	installChrome
-	cd $(SCRIPTROOT)
-	cloneNerdFonts
-	cd $(SCRIPTROOT)
-	clonePowerlineFonts
-	cd $(SCRIPTROOT)
-	cloneOhMyFish
-	cloneBobTheFish
+	defDir $DEFDIR
+	instCode
+	defDir $DEFDIR
+	instChrome
+	defDir $DEFDIR
+	getNerdFonts
+	defDir $DEFDIR
+	getPowerFonts
+	defDir $DEFDIR
+	cloneOMF
+	cloneBTF
 	./pasteConfigs.sh
 	postInstall
 else
