@@ -20,10 +20,10 @@ uidTest() {
 }
 
 wgetTest(){
-    # Check for wget install
-    if [ ! which wget > /dev/null ]; then
-        echo -e "wget not found! Install? (y/n) \c"
-        read
+	# Check for wget install
+	if [ ! which wget > /dev/null ]; then
+		echo -e "wget not found! Install? (y/n) \c"
+		read
 		if "$ANSYN" = "y"; then
 			sudo dnf install wget
 			return 0
@@ -32,27 +32,27 @@ wgetTest(){
 		fi
 	else
 		return 0    
-    fi
+	fi
 }
 
 fishTest(){
-    # Check for fish install
-    if [ ! which fish > /dev/null ]; then
-		while true; do
-			read -p "Install fish? (y/n)" ANSYN
-			case $ANSYN in
-				[Yy]* ) sudo dnf install fish
-						return 0
-						break;;
-				[Nn]* ) return 1
-						exit;;
-				* ) echo "Please answer yes or no.";;
-			esac
-		done
-	else
-		echo "fish installed, current version: " $(fish -v)
-		return 0    
-    fi
+	# Check for fish install
+	if [ ! which fish > /dev/null ]; then
+	while true; do
+		read -p "Install fish? (y/n)" ANSYN
+		case $ANSYN in
+			[Yy]* ) sudo dnf install fish
+					return 0
+					break;;
+			[Nn]* ) return 1
+					exit;;
+			* ) echo "Please answer yes or no.";;
+		esac
+	done
+else
+	echo "fish installed, current version: " $(fish -v)
+	return 0    
+	fi
 }
 
 netTest() {

@@ -20,27 +20,15 @@ pasteFish() {
 	cp -a ../configs/fish ~/.config/fish
 }
 
-codeTest(){
-    # Check for wget install
-    if [ ! which code > /dev/null ]; then
-        echo -e "Visual Studio Code not found! Install? (y/n) \c"
-        read
-		if "$REPLY" = "y"; then
-			installVSCode
-			return 0
-		else
-			return 1
-		fi
+instCode() {
+  if [ ! which code > /dev/null ]; then
+		sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+		sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+		sudo dnf check-update
+		sudo dnf install code
 	else
-		return 0    
-    fi
-}
-
-installVSCode() {
-	sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-	sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
-	sudo dnf check-update
-	sudo dnf install code
+		echo "VS Installed with current version:" $(code --version)
+	fi
 }
 
 fishTest(){
@@ -93,7 +81,7 @@ checkDirCode() {
 
 # Main function
 if [ testNet ]; then
-	if [ checkDirCode ] && [ codeTest ]; then
+	if [ which fish > /dev/null ]; then
 		pasteCode
 	fi
 	pasteBashrc
