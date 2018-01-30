@@ -259,7 +259,7 @@ dispMenu() {
 	echo " 	6) Install Powerline Fonts"
 	echo " 	7) Install Nerd Fonts"
 	echo "	8) Install oh-my-fish & bobthefish"
-	echo " 	9) Install All"
+	echo " 	9) Do everything!"
 	echo "	C) Copy configurations"
 	echo "	B) Backup configurations"
 	echo "	M) Menu"
