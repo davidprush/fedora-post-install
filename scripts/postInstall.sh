@@ -2,14 +2,6 @@
 # postInstall.sh
 # Fedora Post Installation Script & Setup
 # Use apps.txt to add remove apps
-# Overview:
-#           1) Update the system
-#           2) Install Initial Software
-#           3) Setup Third-Party Repos & Install Software
-#           4) Clone Git Repos
-#           5) Setup Config (.dotfiles)
-#           6) Clean up somethings
-#           7) Finish
 
 uidTest() {
 	# Test if currently running as root
@@ -269,7 +261,7 @@ dispMenu() {
 	echo "	8) Install oh-my-fish & bobthefish"
 	echo " 	9) Install All"
 	echo "	C) Copy configurations"
-	echo "  B) Backup configurations"
+	echo "	B) Backup configurations"
 	echo "	M) Menu"
 	echo "	Q) Quit"
 }
@@ -293,9 +285,8 @@ getOption() {
 			[cC]* )	./pasteConfigs.sh;;
 			[bB]* ) ./backupConfigs.sh;;
 			[mM]* ) dispMenu;;
-			[Qq]* ) postInstall
-					exit;;
-			* ) echo "Please enter 1-0";;
+			[Qq]* ) exit;;
+			* ) echo "Please enter option from menu!";;
 		esac
 	done
 }
@@ -305,7 +296,6 @@ DEFDIR=$(pwd)
 if [ netTest ]; then
 	dispMenu
 	getOption $DEFDIR
-	postInstall
 else
 	echo "No internet connection! Connect to internet and try again."
 fi
