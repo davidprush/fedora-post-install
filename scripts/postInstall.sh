@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # postInstall.sh
 # Fedora Post Installation Script & Setup
+# Use apps.txt to add remove apps
 # Overview:
 #           1) Update the system
 #           2) Install Initial Software
@@ -104,29 +105,9 @@ updateSystem() {
 	sudo dnf update -y
 }
 
-initialInstall() {
+instInit() {
 	# Install initial apps
-	sudo dnf install -y nano inxi powerline tlp htop \
-						gcc make nodejs npm fish \
-						youtube-dl gnome-tweak-tool \
-						gcc vlc patch autoconf gcc-c++ \
-						patch libffi-devel automake \
-						libtool bison sqlite-devel \
-						ImageMagick-devel git gitg \
-						python2 python2-pip python3 \
-						python3-pip java-9-openjdk \
-						icedtea-web go rust docker \
-						docker-compose terminator \
-						dnf-plugins-core automake gcc \
-						openssl-devel ncurses-devel \
-						wxBase3 wxGTK3-devel m4 \
-						libinput-gestures hack-fonts \
-						vim-enhanced vim-X11 gimp \
-						corebird httpd mariadb-server \
-						php php-common php-mysqlnd \
-						php-gd php-imap php-xml \
-						php-cli php-opcache \
-						oxygen-icon-theme kernel-devel
+	sudo dnf install -y $(cat apps.txt)
 }
 
 # Maybe someday...still unsure about this bashdb thing
@@ -246,20 +227,11 @@ cloneBTF() {
 	fi 
 }
 
-defDir() {
-	cd $1
-	echo "pwd:="$(pwd)
-	echo "DEFDIR:="$1
-}
-
-# Main Procedure
-DEFDIR=$(pwd) 	# Get pwd to return to default directory
-echo "DEFDIR:="$DEFDIR
-if [ netTest ]; then
+doAll() {
 	updateSystem
 	setCopr
 	defDir $DEFDIR
-	initialInstall
+	instInit
 	defDir $DEFDIR
 	instCode
 	defDir $DEFDIR
@@ -272,6 +244,67 @@ if [ netTest ]; then
 	cloneOMF
 	cloneBTF
 	./pasteConfigs.sh
+	postInstall
+}
+
+defDir() {
+	cd $1
+	# echo "pwd is: "$(pwd)
+}
+
+viewApps(){
+	cat apps.txt
+}
+
+dispMenu() {
+	echo "Fedora Post Install Script"
+	echo "Menu options"
+	echo "	1) Update System"
+	echo "	2) Install from apps.txt"
+	echo "	3) View apps.txt"
+	echo " 	4) Install Visual Studio Code"
+	echo "	5) Install Google Chrome"
+	echo " 	6) Install Powerline Fonts"
+	echo " 	7) Install Nerd Fonts"
+	echo "	8) Install oh-my-fish & bobthefish"
+	echo " 	9) Install All"
+	echo "	C) Copy configurations"
+	echo "  B) Backup configurations"
+	echo "	M) Menu"
+	echo "	Q) Quit"
+}
+
+getOption() {
+	while true; do
+		defDir $1
+		read -p "Enter menu option (M-Menu):" ANSYN
+		case $ANSYN in
+			[1]* ) updateSystem;;
+			[2]* ) setCopr
+				   instInit;;
+			[3]* ) viewApps;;
+			[4]* ) instCode;;
+			[5]* ) instChrome;;
+			[6]* ) getPowerFonts;;
+			[7]* ) getNerdFonts;;
+			[8]* ) cloneOMF
+				   cloneBTF;;
+			[9]* ) doAll;;
+			[cC]* )	./pasteConfigs.sh;;
+			[bB]* ) ./backupConfigs.sh;;
+			[mM]* ) dispMenu;;
+			[Qq]* ) postInstall
+					exit;;
+			* ) echo "Please enter 1-0";;
+		esac
+	done
+}
+
+# Main Procedure
+DEFDIR=$(pwd)
+if [ netTest ]; then
+	dispMenu
+	getOption $DEFDIR
 	postInstall
 else
 	echo "No internet connection! Connect to internet and try again."
