@@ -241,7 +241,7 @@ backup_configs() {
 	if [ fishTest ]; then
 		cp -a ~/.config/fish ../configs/fish
 	fi
-		cp ~/.config/libinput-gestures.conf ../configs/libinput-gestures/libinput-gestures.conf
+	cp ~/.config/libinput-gestures.conf ../configs/libinput-gestures/libinput-gestures.conf
 	cp ~/.bashrc ../configs/bashrc
 }
 
@@ -261,7 +261,7 @@ do_everything() {
 	set_pwd $RUNDIR
 	clone_OMF
 	clone_BTF
-	./pasteConfigs.sh
+	set_configs
 	cleanup
 }
 
