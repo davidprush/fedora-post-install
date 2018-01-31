@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# postInstall.sh
+# cleanup.sh
 # Fedora Post Installation Script & Setup
 # Use apps.txt to add remove apps
 
-uidTest() {
+test_su() {
 	# Test if currently running as root
 	if [ $EUID -ne 0 ]; then
 		return 0
@@ -12,28 +12,28 @@ uidTest() {
 	fi
 }
 
-wgetTest(){
+test_wget(){
 	# Check for wget install
 	if [ ! which wget > /dev/null ]; then
 		echo -e "wget not found! Install? (y/n) \c"
 		read
-		if "$ANSYN" = "y"; then
+		if "$USER_OPTION" = "y"; then
 			sudo dnf install wget
 			return 0
 		else
-			return 1
+			return 1$RUNDIR
 		fi
 	else
 		return 0    
 	fi
 }
 
-fishTest(){
+got_fish() {
 	# Check for fish install
 	if [ ! which fish > /dev/null ]; then
 	while true; do
-		read -p "Install fish? (y/n)" ANSYN
-		case $ANSYN in
+		read -p "Install fish? (y/n)" USER_OPTION
+		case $USER_OPTION in
 			[Yy]* ) sudo dnf install fish
 					return 0
 					break;;
@@ -48,9 +48,9 @@ else
 	fi
 }
 
-netTest() {
+test_internet() {
 	# Test for internet connectivity by silently requesting page
-	if [ wgetTest ]; then
+	if [ test_wget ]; then
 		wget -q --spider http://www.google.com 
 		if [ $? -eq 0 ]; then
 			return 0
@@ -62,17 +62,17 @@ netTest() {
 	fi
 }
 
-postInstall() {
+cleanup() {
 	sudo dnf check-update
 	sudo dnf update -y
 	sudo dnf clean all
 	echo " "
 	sudo dnf history userinstalled
-	echo "postInstall done!"
+	echo "cleanup done!"
 	exit 1
 }
 
-doProjects() {
+make_dir_projects() {
 	PROJDIR = "$HOME/Projects"
 	if [ ! -d "$PROJDIR" ]; then
 		cd $HOME
@@ -83,7 +83,7 @@ doProjects() {
 	fi
 }
 
-checkOMF() {
+got_OMF() {
 	OMFDIR = "$HOME/oh-my-fish"
 	if [ ! -d "$OMFDIR" ]; then
 		return 1;
@@ -92,18 +92,18 @@ checkOMF() {
 	fi
 }
 
-updateSystem() {
+update_system() {
 	# Update system
 	sudo dnf update -y
 }
 
-instInit() {
+install_apps() {
 	# Install initial apps
 	sudo dnf install -y $(cat apps.txt)
 }
 
 # Maybe someday...still unsure about this bashdb thing
-getBashDB() {
+get_bashdb() {
 	wget https://sourceforge.net/projects/bashdb/files/bashdb/4.4-0.93/bashdb-4.4-0.93.tar.bz2/download
 	cd bashdb*
 	./configure
@@ -111,12 +111,12 @@ getBashDB() {
 	su -c 'make install'
 }
 
-setCopr() {
+set_copr_repos() {
 	sudo dnf copr enable -y mhoeher/multitouch
 	sudo dnf copr enable -y heliocastro/hack-fonts
 }
 
-instCode() {
+install_vscode() {
   if [ ! which code > /dev/null ]; then
 		sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
 		sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
@@ -127,8 +127,8 @@ instCode() {
 	fi
 }
 
-instChrome() {
-  if [ ! which google-chrome  > /dev/null ] && [ wgetTest ] && [ wgetTest ]; then
+install_chrome() {
+  if [ ! which google-chrome  > /dev/null ] && [ test_wget ] && [ test_wget ]; then
 		cd $HOME/Downloads
 		wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
 		sudo rpm -i google-chrome-stable_current_x86_64.rpm
@@ -139,13 +139,13 @@ instChrome() {
 	fi	
 }
 
-getNerdFonts() {
+install_nerdfonts() {
 	mkdir $HOME/Fonts
 	cd $HOME/Fonts
 	echo "nerd-fonts directory:=" $(pwd)
 	while true; do
-		read -p "Confirm nerd-fonts directory? (y/n)" ANSYN
-		case $ANSYN in
+		read -p "Confirm nerd-fonts directory? (y/n)" USER_OPTION
+		case $USER_OPTION in
 			[Yy]* ) git clone https://github.com/ryanoasis/nerd-fonts.git 
 					cd $HOME/Fonts/nerd-fonts
 					chmod a+x install.sh
@@ -159,13 +159,13 @@ getNerdFonts() {
 	done
 }
 
-getPowerFonts() {
+install_powerfonts() {
 	mkdir $HOME/Fonts
 	cd $HOME/Fonts
 	echo "Powerline Fonts directory:=" $(pwd)
 	while true; do
-		read -p "Confirm Powerline Fonts directory? (y/n)" ANSYN
-		case $ANSYN in
+		read -p "Confirm Powerline Fonts directory? (y/n)" USER_OPTION
+		case $USER_OPTION in
 			[Yy]* ) git clone https://github.com/powerline/fonts.git 
 					cd $HOME/Fonts/fonts
 					chmod a+x install.sh
@@ -179,13 +179,13 @@ getPowerFonts() {
 	done		
 }
 
-cloneOMF() {
-	if [ ! checkOMF ]; then
+clone_OMF() {
+	if [ ! got_OMF ]; then
 		cd $HOME
 		echo "oh-my-fish directory:=" $(pwd)
 		while true; do
-			read -p "Confirm oh-my-fish directory? (y/n)" ANSYN
-			case $ANSYN in
+			read -p "Confirm oh-my-fish directory? (y/n)" USER_OPTION
+			case $USER_OPTION in
 				[Yy]* ) git clone https://github.com/oh-my-fish/oh-my-fish
 						cd $HOME/oh-my-fish
 						chmod a+x bin/install
@@ -201,13 +201,13 @@ cloneOMF() {
 	fi
 }
 
-cloneBTF() {
-	if [ fishTest ]; then
+clone_BTF() {
+	if [ got_fish ]; then
 		cd $HOME/Downloads
 		echo "bobthefish directory:=" $(pwd)
 		while true; do
-			read -p "Confirm bobthefish directory? (y/n)" ANSYN
-			case $ANSYN in
+			read -p "Confirm bobthefish directory? (y/n)" USER_OPTION
+			case $USER_OPTION in
 				[Yy]* ) ./installBobTheFish.fish; break;;
 				[Nn]* ) exit;;
 				* ) echo "Please answer yes or no.";;
@@ -219,36 +219,62 @@ cloneBTF() {
 	fi 
 }
 
-doAll() {
-	updateSystem
-	setCopr
-	defDir $DEFDIR
-	instInit
-	defDir $DEFDIR
-	instCode
-	defDir $DEFDIR
-	instChrome
-	defDir $DEFDIR
-	getNerdFonts
-	defDir $DEFDIR
-	getPowerFonts
-	defDir $DEFDIR
-	cloneOMF
-	cloneBTF
+set_configs() {
+	if [ testNet ]; then
+		if [ which fish > /dev/null ]; then
+			cp -a ../configs/fish ~/.config/fish
+		fi
+			cp ../configs/bashrc ~/.bashrc
+			cp ../configs/Code/settings.json ~/.config/Code/User/settings.json
+			cp -a ../configs/Code/.vscode ~/.vscode
+			cp ../configs/libinput-gestures/libinput-gestures.conf ~/.config/libinput-gestures.conf
+		else
+			echo "Internet connection required! Connect to internet and try again."
+	fi
+}
+
+backup_configs() {
+	if [ checkDirCode && codeTest ]; then
+		cp ~/.config/Code/User/settings.json ../configs/Code/settings.json
+		cp -a ~/.vscode ../configs/Code/.vscode
+	fi
+	if [ fishTest ]; then
+		cp -a ~/.config/fish ../configs/fish
+	fi
+		cp ~/.config/libinput-gestures.conf ../configs/libinput-gestures/libinput-gestures.conf
+	cp ~/.bashrc ../configs/bashrc
+}
+
+do_everything() {
+	update_system
+	set_copr_repos
+	set_pwd $RUNDIR
+	install_apps
+	set_pwd $RUNDIR
+	install_vscode
+	set_pwd $RUNDIR
+	install_chrome
+	set_pwd $RUNDIR
+	install_nerdfonts
+	set_pwd $RUNDIR
+	install_powerfonts
+	set_pwd $RUNDIR
+	clone_OMF
+	clone_BTF
 	./pasteConfigs.sh
-	postInstall
+	cleanup
 }
 
-defDir() {
+set_pwd() {
 	cd $1
-	# echo "pwd is: "$(pwd)
+	echo "pwd is: "$(pwd)
 }
 
-viewApps(){
+view_apps(){
 	cat apps.txt
 }
 
-dispMenu() {
+display_menu() {
 	echo "Fedora Post Install Script"
 	echo "Menu options"
 	echo "	1) Update System"
@@ -260,31 +286,31 @@ dispMenu() {
 	echo " 	7) Install Nerd Fonts"
 	echo "	8) Install oh-my-fish & bobthefish"
 	echo " 	9) Do everything!"
-	echo "	C) Copy configurations"
+	echo "	S) Set configurations"
 	echo "	B) Backup configurations"
 	echo "	M) Menu"
 	echo "	Q) Quit"
 }
 
-getOption() {
+get_option() {
 	while true; do
-		defDir $1
-		read -p "Enter menu option (M-Menu):" ANSYN
-		case $ANSYN in
-			[1]* ) updateSystem;;
-			[2]* ) setCopr
-				   instInit;;
-			[3]* ) viewApps;;
-			[4]* ) instCode;;
-			[5]* ) instChrome;;
-			[6]* ) getPowerFonts;;
-			[7]* ) getNerdFonts;;
-			[8]* ) cloneOMF
-				   cloneBTF;;
-			[9]* ) doAll;;
-			[cC]* )	./pasteConfigs.sh;;
-			[bB]* ) ./backupConfigs.sh;;
-			[mM]* ) dispMenu;;
+		set_pwd $1
+		read -p "Enter menu option (M-Menu):" USER_OPTION
+		case $USER_OPTION in
+			[1]* ) update_system;;
+			[2]* ) set_copr_repos
+				   install_apps;;
+			[3]* ) view_apps;;
+			[4]* ) install_vscode;;
+			[5]* ) install_chrome;;
+			[6]* ) install_powerfonts;;
+			[7]* ) install_nerdfonts;;
+			[8]* ) clone_OMF
+				   clone_BTF;;
+			[9]* ) do_everything;;
+			[sS]* )	set_configs;;
+			[bB]* ) backup_configs;;
+			[mM]* ) display_menu;;
 			[Qq]* ) exit;;
 			* ) echo "Please enter option from menu!";;
 		esac
@@ -292,10 +318,10 @@ getOption() {
 }
 
 # Main Procedure
-DEFDIR=$(pwd)
-if [ netTest ]; then
-	dispMenu
-	getOption $DEFDIR
+RUNDIR=$(pwd)
+if [ test_internet ]; then
+	display_menu
+	get_option $RUNDIR
 else
 	echo "No internet connection! Connect to internet and try again."
 fi
