@@ -1,0 +1,5 @@
+~/.config/fish
+~/.bashrc
+~/.config/Code/User/settings.json
+~/.vscode
+~/.config/libinput-gestures.conf
