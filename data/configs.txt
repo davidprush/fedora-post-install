@@ -3,3 +3,6 @@
 ~/.config/Code/User/settings.json
 ~/.vscode/*
 ~/.config/libinput-gestures.conf
+~/.local/share/gnome-shell/extensions
+~/.local/share/gnome-shell/application_state
+~/.config/dconf

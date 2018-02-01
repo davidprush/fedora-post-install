@@ -80,6 +80,12 @@ This script requires the following directories and files:
                                     |---->fish_prompt.fish
                             |---->config.fish
                             |---->fishd.localhost.localdomain
+                    |---->Gnome/
+                            |---->dconf/
+                                    |---->User
+                            |---->extensions/
+                                    |---->*ALL GNOME EXTENSIONS ...
+                            |---->application_state
                     |---->libinput-gestures/
                             |---->libinput-gestures.conf
                     |---->bashrc

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<application-state>
+  <context id="">
+    <application id="gnome-control-center.desktop" open-window-count="0" score="92" last-seen="1517520667"/>
+    <application id="yelp.desktop" open-window-count="0" score="0" last-seen="1517017772"/>
+    <application id="firefox.desktop" open-window-count="0" score="81" last-seen="1517075287"/>
+    <application id="terminator.desktop" open-window-count="0" score="2" last-seen="1517181218"/>
+    <application id="libreoffice-startcenter.desktop" open-window-count="0" score="0" last-seen="1517179875"/>
+    <application id="org.gnome.Nautilus.desktop" open-window-count="1" score="317" last-seen="1517526173"/>
+    <application id="gnome-tweak-tool.desktop" open-window-count="1" score="148" last-seen="1517521621"/>
+    <application id="code.desktop" open-window-count="1" score="2763" last-seen="1517525993"/>
+    <application id="google-chrome.desktop" open-window-count="1" score="10140" last-seen="1517525997"/>
+    <application id="org.gnome.gedit.desktop" open-window-count="0" score="31" last-seen="1517516626"/>
+    <application id="gnome-shell-extension-prefs.desktop" open-window-count="0" score="53" last-seen="1517525747"/>
+    <application id="org.gnome.Terminal.desktop" open-window-count="2" score="6177" last-seen="1517526254"/>
+    <application id="org.gnome.DiskUtility.desktop" open-window-count="0" score="4" last-seen="1517522712"/>
+    <application id="chrome-bikioccmkafdpakkkcpdbppfkghcmihk-Default.desktop" open-window-count="0" score="32" last-seen="1517089181"/>
+    <application id="org.gnome.Software.desktop" open-window-count="0" score="30" last-seen="1517167251"/>
+    <application id="libreoffice-writer.desktop" open-window-count="0" score="1" last-seen="1517179872"/>
+    <application id="gnome-system-monitor.desktop" open-window-count="0" score="1" last-seen="1517523023"/>
+  </context>
+</application-state>
