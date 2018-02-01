@@ -6,6 +6,7 @@ corebird
 dnf-plugins-core
 docker
 docker-compose
+ffmpeg
 fish
 gcc
 gcc
@@ -20,7 +21,8 @@ gnome-themes-standard
 gnome-tweak-tool
 go
 gsmartcontrol
-gtk-murrine-engine
+gtk2-engines
+gtk-murrine-engine 
 hack-fonts
 htop
 httpd
@@ -60,7 +62,7 @@ python3
 python3-pip
 remind
 rust
-smartctl
+smartmontools
 sqlite-devel
 task
 terminator
