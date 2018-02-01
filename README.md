@@ -7,9 +7,9 @@ This git repo consists of Fedora (27) system/software configuration files and in
 Post install of a Fedora system, clone to user home directory and run scripts.
 
 ## Instructions
-                #### Clone this repo and run the script in the repo's root directory directory.
+   #### Clone this repo and run the script in the repo's root directory directory.
 ### NAME
-                #### Fedora Post Install
+   #### Fedora Post Install
 ### OPTIONS
                 update...............Update the system
 
