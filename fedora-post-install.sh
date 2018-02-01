@@ -16,9 +16,10 @@
 #		repos			Set copr & rpmfusion repos
 #		set-config		Set configuration files
 #		backup-config	Backup configuration files
-#		menu			View this menu
+#		pia-nm			INstall PIA openvpn configuration files (requires pia-nm.sh)
+#		options			List options for running this script
 #		quit			Quit the script
-#		help			View help
+#		help			View helpll --all --verbose
 #
 #FILES
 #
@@ -26,8 +27,44 @@
 #		configs.txt		Text file listing file path of config files to save
 #
 #USAGE
-#		./fedora-post-install.sh [COMMAND]
-SCRIPT_ROOT=$(pwd)
+#		sudo bash fedora-post-install.sh [COMMAND]
+#
+#Requirements (Directory structure)
+#		This script requires the following directories and files:
+#				fedora-post-install/
+#						|---->configs/
+#								|---->Code
+#										|---->cloudSettings
+#										|---->extensions.json
+#										|---->keybindings.json
+#										|---->keybindingsMac.json
+#										|---->settins.json
+#										|---->vsicons.settings.json
+#								|---->fish
+#										|---->conf.d
+#												|---->omf.fish
+#										|---->functions
+#												|---->fish_prompt.fish
+#										|---->config.fish
+#										|---->fishd.localhost.localdomain
+#								|---->libinput-gestures
+#										|---->libinput-gestures.conf
+#								|---->bashrc
+#						|---->data/
+#								|---->apps.txt
+#								|---->configs.txt
+#						|---->scripts/
+#								|---->install-bobthefish.fish
+#								|---->LIBRARY.sh
+#								|---->pia-nm.sh
+#						|---->fedora-post-install.sh
+#						|---->LICENSE.md 
+#						|---->README.md 
+#
+#
+#
+
+SCRIPT_ROOT="$(pwd)"
 SCRIPT_DIR="$(pwd)/scripts"
 CONFIG_DIR="$(pwd)/config"
 DATA_DIR="$(pwd)/data"
@@ -55,7 +92,7 @@ HTTP_BASHDB="https://sourceforge.net/projects/bashdb/files/bashdb/4.4-0.93/bashd
 display_help() {
 cat<<_EOF_
 $(LIB_ECHO BOLD "NAME")
-	Fedora Post Install
+	Fedora Post Install"$SCRIPT_DIR/LIBRARY.sh"
 $(LIB_ECHO BOLD "OPTIONS")
 	update			Update the system
 	apps			Install software listed in apps.txt
@@ -70,6 +107,7 @@ $(LIB_ECHO BOLD "OPTIONS")
 	repos			Set copr & rpmfusion repos
 	set-config		Set configuration files
 	backup-config		Backup configuration files
+	pia-nm			Install PIA openvpn configuration files
 	options			View this menu
 	quit			Quit the script
 	sites			List URL adresses used in this script

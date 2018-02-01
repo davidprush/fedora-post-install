@@ -2,6 +2,7 @@ autoconf
 automake
 automake
 bison
+chrome-gnome-shell
 corebird
 dnf-plugins-core
 docker
@@ -34,6 +35,8 @@ kernel-devel
 libffi-devel
 libinput-gestures
 libtool
+lm_sensors 
+lm_sensors-sensord
 m4
 make
 mariadb-server

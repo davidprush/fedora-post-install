@@ -15,10 +15,10 @@ HTTP_PIA_INFO="https://www.privateinternetaccess.com/vpninfo/servers?version=24"
 
 LIB_TEST_ROOT
 if [ $(LIB_TEST_APP "python") ]; then 
-	LIB_INSTALL_APP python
+	LIB_INSTALL_APP "python"
 fi
 if [ $(LIB_TEST_APP "NetworkManager-openvpn") ]; then
-	LIB_INSTALL_APP NetworkManager-openvpn
+	LIB_INSTALL_APP "NetworkManager-openvpn"
 fi
 
 # Get user data
@@ -77,11 +77,11 @@ esac
 
 # Download and install
 curl -sS -o "/etc/openvpn/pia-$pia_cert" \
-	"$HTTP_PIA_CERT" \
+	"$HTTP_PIA_CERT$pia_cert" \
 	|| error "Failed to download OpenVPN CA certificate, aborting."
 
 IFS=$(echo)
-servers=$(curl -Ss "HTTP_PIA_INFO$pia_cert" | head -1)
+servers=$(curl -Ss "$HTTP_PIA_INFO" | head -1)
 
 if [ -z "$servers" ]; then
 	error "Failed to download server list, aborting."
@@ -132,6 +132,7 @@ password=$pia_password
 method=auto
 EOF
 	chmod 0600 "$nmfile"
+	cat $nmfile
 done
 
 nmcli connection reload || \
