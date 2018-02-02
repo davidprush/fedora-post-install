@@ -12,6 +12,7 @@ BLUE="\033[34m"
 PINK="\033[35m"
 CYAN="\033[36m"
 WHITE="\033[37m"
+BOLDWHITE="\033[0;1;37m"
 NORMAL="\033[0;39m"
 NC="\033[0m" # no colour
 
@@ -48,6 +49,9 @@ LIB_ECHO() {
             ;;
         WHITE|white|w|W) 
             echo -e "${WHITE}$FTEXT${NC}"
+            ;;
+        BOLDWHITE|boldwhite|bw|BW) 
+            echo -e "${BOLDWHITE}$FTEXT${NC}"
             ;;
         NORMAL|normal|n|N) 
             echo -e "${NORMAL}$FTEXT${NC}"

@@ -17,6 +17,7 @@
 #		set-config		Set configuration files
 #		backup-config	Backup configuration files
 #		pia-nm			INstall PIA openvpn configuration files (requires pia-nm.sh)
+#		clone-github	CLone all of your GitHub repos to $HOME/GITHUB_CLONE
 #		options			List options for running this script
 #		quit			Quit the script
 #		help			View helpll --all --verbose
@@ -86,13 +87,14 @@ HTTP_NERDFONT="https://github.com/ryanoasis/nerd-fonts.git"
 HTTP_POWERLINE_FONT="https://github.com/powerline/fonts.git"
 HTTP_OHMYFISH="https://github.com/oh-my-fish/oh-my-fish"
 HTTP_BASHDB="https://sourceforge.net/projects/bashdb/files/bashdb/4.4-0.93/bashdb-4.4-0.93.tar.bz2/download"
+HTTP_GITHUB_SSHKEY="https://github.com/settings/ssh/new"
 
 . "$SCRIPT_DIR/LIBRARY.sh"
 
 display_help() {
 cat<<_EOF_
 $(LIB_ECHO BOLD "NAME")
-	Fedora Post Install"$SCRIPT_DIR/LIBRARY.sh"
+				$(LIB_ECHO BOLDWHITE "Fedora Post Install")
 $(LIB_ECHO BOLD "OPTIONS")
 	update			Update the system
 	apps			Install software listed in apps.txt
@@ -108,6 +110,7 @@ $(LIB_ECHO BOLD "OPTIONS")
 	set-config		Set configuration files
 	backup-config		Backup configuration files
 	pia-nm			Install PIA openvpn configuration files
+	clone-github		CLone all of your GitHub repos to $HOME/GITHUB_CLONE
 	options			View this menu
 	quit			Quit the script
 	sites			List URL adresses used in this script
@@ -118,7 +121,7 @@ $(LIB_ECHO BOLD "REQUIRED FILES")
 	configs.txt		Text file listing file path of config files to save
 	$(LIB_ECHO CYAN "$CONFIGS_TXT")
 $(LIB_ECHO BOLD "USAGE")
-	./fedora-post-install.sh [COMMAND]
+	sudo bash fedora-post-install.sh [optional COMMAND]
 _EOF_
 }
 
@@ -329,6 +332,39 @@ backup_configs() {
 	cp ~/.bashrc ../configs/bashrc
 }
 
+get_github_repos() {
+	local GITHUB_USER=""
+	while [ -z "$GITHUB_USER" ]; do
+		read -p "Enter GitHub username? (y/n)" GITHUB_USER
+	done
+	while true; do
+		read -p "Do you have an SSH Key generated in /home/$USER/.ssh/id_rsa? (y/n)" OPT
+		case $OPT in
+			[Yy]* )
+				break
+				;;
+			[Nn]* )
+				LIB_ECHO YELLOW "You will now create ssh keys, use all default options."
+				read -p "Enter your GitHub email address: " EMAIL
+				ssh-keygen -t rsa -b 4096 -C "$EMAIL"
+				eval ssh-agent -s
+				ssh-add ~/.ssh/id_rsa
+				exit
+				;;
+			* ) LIB_INVALID_YN $OPT;;
+		esac
+	done
+	xclip -sel clip < ~/.ssh/id_rsa.pub
+	LIB_ECHO BOLD "Your ssh key is saved to your clipboard, follow the link below to paste it in your GitHub account."
+	LIB_ECHO YELLOW "Go to this web address and follow the instructions: $(LIB_ECHO PINK "$HTTP_GITHUB_SSHKEY")"
+	mkdir $HOME/GITHUB_CLONED
+	cd $HOME/GITHUB_CLONED
+	echo "All of your GitHub repos will be cloned to $HOME/GITHUB_REPOS/, press enter to continue:"
+	read
+	curl -s https://api.github.com/users/{$GITHUB_USER}/repos\?per_page\=200 | perl -ne 'print "$1\n" if (/"ssh_url": "([^"]+)/)' | xargs -n 1 git clone
+	ssh -vT git@github.com
+}
+
 do_everything() {
 	LIB_UPDATE
 	set_repos
@@ -347,6 +383,7 @@ do_everything() {
 	clone_BTF
 	set_configs
 	. $SCRIPT_DIR/pia-nm.sh
+	get_github_repos
 	LIB_CLEANUP
 }
 
@@ -403,6 +440,9 @@ get_option() {
 				;;
 			'pia-nm')
 				. $SCRIPT_DIR/pia-nm.sh
+				;;
+			'clone-github')
+				get_github_repos
 				;;
 			'options')
 				display_options
