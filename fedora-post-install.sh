@@ -69,18 +69,18 @@ SCRIPT_ROOT="$(pwd)"
 SCRIPT_DIR="$(pwd)/scripts"
 CONFIG_DIR="$(pwd)/config"
 DATA_DIR="$(pwd)/data"
-DOWNLOADS_DIR="$HOME/Downloads"
+DOWNLOADS_DIR="$HOME/Downloads" 
 PROJECTS_DIR="$HOME/Projects"
 OHMYFISH_DIR="$HOME/oh-my-fish"
 NERDFONTS_DIR="$HOME/Fonts/nerd-fonts"
-VSCODE_LOCAL_REPO="/etc/yum.repos.d/vscode.repo"
 FONTS_DIR="$HOME/Fonts"
 POWERLINE_DIR="$HOME/Fonts/fonts"
 APPS_TXT="$DATA_DIR/apps.txt"
 CONFIGS_TXT="$DATA_DIR/configs.txt"
-HTTP_CHROME="https://sourceforge.net/projects/bashdb/files/bashdb/4.4-0.93/bashdb-4.4-0.93.tar.bz2/download"
+HTTP_CHROME_REPO="http://dl.google.com/linux/chrome/rpm/stable/x86_64"
+HTTP_CHROME_KEYS="https://dl.google.com/linux/linux_signing_key.pub"
 HTTP_VSCODE_KEYS="https://packages.microsoft.com/keys/microsoft.asc"
-HTTP_VSCODE_REPO="https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc"
+HTTP_VSCODE_REPO="https://packages.microsoft.com/yumrepos/vscode"
 HTTP_RPMFUSION_FREE="http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release"
 HTTP_RPMFUSION_NONFREE="http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release"
 HTTP_NERDFONT="https://github.com/ryanoasis/nerd-fonts.git"
@@ -204,10 +204,7 @@ set_repos() {
 
 install_vscode() {
   if [ $(LIB_TEST_APP vscode) ]; then
-		rpm --import "$HTTP_VSCODE_KEYS"
-		sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=$HTTP_VSCODE_REPO" > $VSCODE_LOCAL_REPO'
-		dnf check-update
-		dnf install code
+		LIB_ADD_REPO "code" "Visual Studio Code" $HTTP_VSCODE_REPO $HTTP_VSCODE_KEYS "vscode"
 		return 0
 	else
 		LIB_ECHO GREEN "$(code --version)$(LIB_OK)"
@@ -217,10 +214,7 @@ install_vscode() {
 
 install_chrome() {
   if [ $(LIB_TEST_APP google-chrome) ]; then
-		cd $HOME/Downloads
-		wget "$HTTP_CHROME"
-		rpm -i google-chrome-stable_current_x86_64.rpm
-		dnf update -y
+		LIB_ADD_REPO "google-chrome" "google-chrome" $HTTP_CHROME_REPO $HTTP_CHROME_KEYS "google-chrome"
 		return 0
 	else
 		LIB_ECHO GREEN "$(google-chrome --version)$(LIB_OK)"

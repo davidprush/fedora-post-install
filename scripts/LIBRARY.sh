@@ -233,6 +233,20 @@ LIB_INSTALL_CONFIRM() {
     done 
 }
 
+LIB_ADD_REPO() {
+# $1=App Name
+# $2=Repo Name
+# $3=Base URL
+# $4=Repo gpgkey
+# $5=Repo File Name
+    REPO="/etc/yum.repos.d/${5}.repo"
+    rpm --import "$4"
+    sh -c \
+    'echo -e "[$1]\nname=$2\nbaseurl=$3\nenabled=1\ngpgcheck=1\ngpgkey=1\ngpgkey=$4" > $REPO'
+    dnf update -y
+    dnf install "$1"
+}
+
 # Get option from user via standard prompt
 LIB_OPTION() {
     read -p "$(LIB_ECHO BOLD '\nEnter command: ')" USER_COMMAND
