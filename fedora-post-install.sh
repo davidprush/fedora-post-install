@@ -155,7 +155,7 @@ $(LIB_ECHO BOLD "COMMANDS (use help for details):")
 [update]	[apps]		[apps-confirm] 		[view-apps]		[vscode] 	
 [chrome] 	[power-fonts]	[nerd-fonts]		[omf-btf] 		[all]
 [repos]		[set-config]	[backup-config] 	[pia-nm]		[options]
-[quit]		[sites] 	[help]
+[clone-github]	[quit]		[sites] 		[help]
 _EOF_
 }
 
@@ -167,7 +167,7 @@ got_fish() {
 }
 
 make_dir_projects() {
-	PROJDIR = PROJECTS_DIR
+	PROJDIR=PROJECTS_DIR
 	if [ ! -d "$PROJDIR" ]; then
 		cd $HOME
   		mkdir $PROJDIR
@@ -178,7 +178,7 @@ make_dir_projects() {
 }
 
 got_OMF() {
-	OMFDIR = OHMYFISH_DIR
+	OMFDIR=OHMYFISH_DIR
 	if [ ! -d "$OMFDIR" ]; then
 		return 1;
 	else
@@ -210,7 +210,7 @@ install_vscode() {
 		dnf install code
 		return 0
 	else
-		LIB_ECHO GREEN "VS Code installed, current version: $(code --version)"
+		LIB_ECHO GREEN "$(code --version)$(LIB_OK)"
 		return 1
 	fi
 }
@@ -223,7 +223,7 @@ install_chrome() {
 		dnf update -y
 		return 0
 	else
-		LIB_ECHO GREEN "Google Chrome installed, current version: $(google-chrome --version)"
+		LIB_ECHO GREEN "$(google-chrome --version)$(LIB_OK)"
 		return 1
 	fi	
 }
@@ -355,13 +355,18 @@ get_github_repos() {
 		esac
 	done
 	xclip -sel clip < ~/.ssh/id_rsa.pub
-	LIB_ECHO BOLD "Your ssh key is saved to your clipboard, follow the link below to paste it in your GitHub account."
-	LIB_ECHO YELLOW "Go to this web address and follow the instructions: $(LIB_ECHO PINK "$HTTP_GITHUB_SSHKEY")"
+	LIB_ECHO BOLD "Your ssh key is saved to your clipboard, \
+					follow the link below to paste it in your GitHub account."
+	LIB_ECHO YELLOW "Go to this web address and follow the instructions: \
+					$(LIB_ECHO PINK "$HTTP_GITHUB_SSHKEY")"
 	mkdir $HOME/GITHUB_CLONED
 	cd $HOME/GITHUB_CLONED
-	echo "All of your GitHub repos will be cloned to $HOME/GITHUB_REPOS/, press enter to continue:"
+	echo "All of your GitHub repos will be cloned to \
+			$HOME/GITHUB_REPOS/, press enter to continue:"
 	read
-	curl -s https://api.github.com/users/{$GITHUB_USER}/repos\?per_page\=200 | perl -ne 'print "$1\n" if (/"ssh_url": "([^"]+)/)' | xargs -n 1 git clone
+	curl -s https://api.github.com/users/{$GITHUB_USER}/repos\?per_page\=200 \
+			| perl -ne 'print "$1\n" if (/"ssh_url": "([^"]+)/)' \
+			| xargs -n 1 git clone
 	ssh -vT git@github.com
 }
 
@@ -389,7 +394,7 @@ do_everything() {
 
 get_option() {
 	if [ $# -eq 0 ]; then
-		OPT=$(LIB_GET_COMMAND)
+		OPT=$(LIB_OPTION)
 	else
 		OPT=$1
 	fi
@@ -461,7 +466,7 @@ get_option() {
 				display_options
 		esac
 		OPT=""
-		OPT=$(LIB_GET_COMMAND)
+		OPT=$(LIB_OPTION)
 	done
 }
 

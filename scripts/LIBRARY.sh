@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
-# Add this LIBtion script to script using next line ...
-#   . ./scripts/LIBtions.sh
+# Add this LIBRARY script to script using next line ...
+#   . ./scripts/LIBRARY.sh
 # Bash text colors
 BOLD="\033[0;1m"
 BOLDRED="\033[0;1;31m"			
@@ -16,9 +16,10 @@ BOLDWHITE="\033[0;1;37m"
 NORMAL="\033[0;39m"
 NC="\033[0m" # no colour
 
+# Make things pretty
 LIB_ECHO() {
-    FCOLOR=$1
-    FTEXT=$2
+    local FCOLOR=$1
+    local FTEXT=$2
     case "$FCOLOR" in
         RED|red|r|R) 
             echo -e "${RED}$FTEXT${NC}"
@@ -59,30 +60,37 @@ LIB_ECHO() {
     esac
 }
 
+# Begin standardized output banner
 LIB_BANNER_BEGIN() {
-    LIB_ECHO YELLOW "\n-------------------------->>BEGIN:$1<<--------------------------"
+    LIB_ECHO YELLOW "\nBEGIN:      $1\n"
 }
 
+# End standardized output banner
 LIB_BANNER_END() {
-    LIB_ECHO GREEN "\n-------------------------->>END:$1<<--------------------------"
+    LIB_ECHO GREEN "\nEND:      $1\n"
 }
 
+# OK notification
 LIB_OK() {
     LIB_ECHO GREEN "--> [ OK ]"
 }
 
+# Failure notification
 LIB_FAIL() {
     LIB_ECHO RED "--> [ FAIL ]"
 }
 
+# Invalid input notification
 LIB_INVALID_INPUT() {
     LIB_ECHO RED "\n'${1}' is invalid command ..."
 }
 
+# Invalid Yes/No answer
 LIB_INVALID_YN() {
     LIB_ECHO RED "\n'${1}' is not valid enter y/Y or n/N ..."
 }
 
+# Generic notification
 LIB_NOTIFY() {
 local NOTICE=$1
 if [ $? -eq 0 ]; then
@@ -96,10 +104,16 @@ _EOF_
 fi
 }
 
-LIB_TEST_NOTIFY() {
-    echo -e "\n$( LIB_NOTIFY ) .: Tests starting ..."
+# LIB_ERROR handler
+LIB_ERROR() {
+    echo " "
+    ERR_MSG=$(LIB_ECHO RED "$*") 
+    echo "$ERR_MSG" #>&2
+    echo " "
+	exit 255
 }
 
+# Test if file exists
 LIB_TEST_FILE() {
     local FILETEST=$1
     if [[ ! -f "$FILETEST" ]]; then
@@ -109,7 +123,8 @@ LIB_TEST_FILE() {
     fi
 }
 
-LIB_TEST_REQ_DIR() {
+# Test if directory exists
+LIB_TEST_DIR() {
     local REQDIR=$1
     local ERR="ERROR-->file '$REQDIR' required but not found."
     if [[ ! -f "$REQDIR" ]]; then
@@ -118,6 +133,7 @@ LIB_TEST_REQ_DIR() {
     fi
 }
 
+# Test if user is root
 LIB_TEST_ROOT() {
     local ERR="ERROR-->Script requires root!"
     if (( EUID != 0 )); then
@@ -126,6 +142,7 @@ LIB_TEST_ROOT() {
     fi
 }
 
+# Test if user's HOME directory exists
 LIB_TEST_HOME() {
     local USERNAME=$1
     local ERR="ERROR-->no USERNAME provided."
@@ -139,6 +156,7 @@ LIB_TEST_HOME() {
     fi
 }
 
+# Test if connected to Internet
 LIB_TEST_NET() {
     local ERR="ERROR-->Script requires internet."
     wget -q --spider http://www.google.com 
@@ -148,6 +166,7 @@ LIB_TEST_NET() {
     fi
 }
 
+# Test if app is installed
 LIB_TEST_APP(){
     local APPTEST=$1
     if [ -z "$APPTEST" ]; then
@@ -161,12 +180,20 @@ LIB_TEST_APP(){
     fi
 }
 
+# Change directory and show user PWD
+# If no $ARG $1 then default to $HOME
 LIB_SET_DIR() {
-    local SETDIR=$1
+    local SETDIR=""
+    if [ $# -eq 0 ]; then
+        SETDIR=$HOME
+    else
+        SETDIR=$1
+    fi
 	cd $SETDIR
 	LIB_ECHO YELLOW "Directory changed to: $(pwd)"
 }
 
+# Install apps from file as an $ARG
 LIB_INSTALL() {
     local FILE=$1
     local ERR="ERROR-->Missing file: $FILE"
@@ -177,6 +204,7 @@ LIB_INSTALL() {
     fi
 }
 
+# Prompt user before installing app
 LIB_INSTALL_APP() {
     local APP=$1
     while true; do
@@ -191,6 +219,7 @@ LIB_INSTALL_APP() {
     return 0
 }
 
+# Check if apps from file list are installed
 LIB_INSTALL_CONFIRM() {
     local APPFILE=$1
     declare -a arrAPPS
@@ -204,12 +233,14 @@ LIB_INSTALL_CONFIRM() {
     done 
 }
 
-LIB_GET_COMMAND() {
+# Get option from user via standard prompt
+LIB_OPTION() {
     read -p "$(LIB_ECHO BOLD '\nEnter command: ')" USER_COMMAND
     echo "$USER_COMMAND"
     return 0
 }
 
+# View file
 LIB_VIEW_FILE() {
     local VIEWFILE=$1
     LIB_BANNER_BEGIN $VIEWFILE
@@ -217,24 +248,29 @@ LIB_VIEW_FILE() {
     LIB_BANNER_END $VIEWFILE
 }
 
+# Backup files passed as ARGS
 LIB_BAK_FILE() {
     for f in "$@"; do cp "$f" "$f.$(date +%FT%H%M%S).bak"; done
 }
 
+# Update Fedora Linux
 LIB_UPDATE() {
     LIB_ECHO YELLOW "Update packages and upgrade ..."
     sudo dnf update -y
     LIB_OK
 }
 
+# Cleanup system
 LIB_CLEANUP() {
     sudo dnf update -y
+    sudo dnf autoremove -y
     sudo dnf clean all
     sudo dnf history userinstalled
     echo "\n$( LIB_NOTIFY ) .: Cleaned up system ..."
     return 0
 }
 
+# Finished notification
 LIB_FINISHED() {
     local FINITO="All finished!"
     echo FINITO 
